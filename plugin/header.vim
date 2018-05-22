@@ -74,7 +74,7 @@ func s:set_header()
 		call setline(16, "    pass") 
 		call setline(17, "") 
 		call setline(18, "if '__main__' == __name__:") 
-		call setline(19, "    main(sys.argv)") 
+		call setline(19, "    main(sys.argv[1:])") 
 	elseif &filetype == 'sh'
 		call setline(1, "#!/bin/bash") 
 		call setline(2, "") 
