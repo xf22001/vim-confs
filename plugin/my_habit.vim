@@ -61,6 +61,9 @@ vmap <F3> y/<C-R>"<CR>
 "map <F4> Show Full Path
 nmap <F4> :call Path()<CR>
 
+"map <F4> grep words
+vmap <F4> y:vimgrep /<C-R>"/g %
+
 "map <F5> Update file
 nmap <F5> :call UpdateFile()<CR>
 
