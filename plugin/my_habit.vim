@@ -70,6 +70,9 @@ nmap <F5> :call UpdateFile()<CR>
 "map <F6> echo file path
 nmap <F6> :call EchoFilePath()<CR>
 
+"map <F7> reformat file
+nmap <F7> :call ReFormatFile()<CR>
+
 "map yank to system clip board
 vn y "+y
 vn p "+p
@@ -90,6 +93,10 @@ endfunction
 
 function! EchoFilePath()
 	:!echo "%:p"
+endfunction
+
+function! ReFormatFile()
+	exec "%! astyle -A1Lfpjk3NSs2"
 endfunction
 
 
