@@ -96,7 +96,11 @@ function! EchoFilePath()
 endfunction
 
 function! ReFormatFile()
+	"取得当前光标所在行号
+	let lineNum = line(".")
 	exec "%! astyle -A1Lfpjk3NSs2"
+	"返回先前光标所在行
+	exec lineNum
 endfunction
 
 
