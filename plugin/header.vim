@@ -5,8 +5,10 @@ autocmd BufWrite * exec "call s:set_last_modify_time(9)"
 function s:set_last_modify_time(lineno)
         let modif_time = strftime("%c")
 	let line = getline(a:lineno)
-	let line = substitute(line, '修改日期：.*', '修改日期：'.modif_time, "")
-	call setline(a:lineno, line)
+	let line_subst = substitute(line, '修改日期：.*', '修改日期：'.modif_time, "")
+	if line_subst != line
+		call setline(a:lineno, line_subst)
+	endif
 endfunction
 
 "定义函数set_header，自动插入文件头 
