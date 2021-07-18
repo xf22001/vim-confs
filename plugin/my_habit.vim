@@ -78,6 +78,9 @@ nmap <F6> :call EchoFilePath()<CR>
 "map <F7> reformat file
 nmap <F7> :call ReFormatFile()<CR>
 
+"map <F8> reformat file
+vmap <F8> y:1,$s:\<<C-R>"\>:<C-R>"
+
 "map yank to system clip board
 vn y "+y
 vn p "+p
