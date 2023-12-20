@@ -52,12 +52,12 @@ nmap ]g <Plug>(coc-git-nextchunk)
 nmap gC <Plug>(coc-git-commit)
 
 " Use K to show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+" nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-function! s:show_documentation()
-	if (index(['vim', 'help'], &filetype) >= 0)
-		execute 'h '.expand('<cword>')
-	else
-		let l:found = CocAction('doHover')
-	endif
-endfunction
+" function! s:show_documentation()
+" 	if (index(['vim', 'help'], &filetype) >= 0)
+" 		execute 'h '.expand('<cword>')
+" 	elseif (index(['python'], &filetype) >= 0)
+" 		let l:found = CocAction('doHover')
+" 	endif
+" endfunction
