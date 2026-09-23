@@ -9,6 +9,8 @@
 #       辅助文件请用 _ 前缀或非 .sh 后缀 (例如 *.snippet.js), 以免被当成入口。
 #       每个补丁脚本自行保证幂等 (内容已打补丁就跳过)。
 #
+# 另外把仓库根目录的 .vimrc 软链到 ~/.vimrc, 让它成为唯一来源, 避免两处漂移。
+#
 # 手动运行: bash install.sh
 set -uo pipefail
 
@@ -36,6 +38,27 @@ for script in "$SELF"/patches/*/*.sh; do
   esac
   run_patch "$script"
 done
+
+# 让仓库里的 .vimrc 成为唯一来源: 软链到 ~/.vimrc (幂等; 覆盖前先备份)
+link_vimrc() {
+  local src="$SELF/.vimrc" dst="$HOME/.vimrc"
+  [ -f "$src" ] || return 0
+  if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+    echo "── ~/.vimrc 已指向仓库, 跳过。"
+    return 0
+  fi
+  if [ -e "$dst" ] && [ ! -L "$dst" ]; then
+    local bak="$dst.bak.$(date +%Y%m%d%H%M%S)"
+    cp -p "$dst" "$bak" && echo "── 已备份原 ~/.vimrc -> $bak"
+  fi
+  if ln -sfn "$src" "$dst"; then
+    echo "── 已链接 ~/.vimrc -> $src"
+  else
+    echo "!! 无法链接 ~/.vimrc" >&2
+    failed=$((failed + 1))
+  fi
+}
+link_vimrc
 
 echo
 if [ "$failed" -eq 0 ]; then
