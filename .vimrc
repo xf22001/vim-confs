@@ -19,7 +19,8 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'fatih/vim-go', { 'tag': '*' }
 
 " 安装/更新本插件时跑它的统一入口 (do 钩子 cwd = 插件目录), 入口里自动跑 patches/ 下所有补丁。
-" 日常启动时由 plugin/markdown_preview_math.vim 兜底重打。
+" 补丁只在这一刻重打。单独 :PlugUpdate 某个被补丁的插件会覆盖其文件,
+" 那就再跑一次 bash install.sh (或 :PlugUpdate vim-confs)。
 Plug 'xf22001/vim-confs', { 'do': 'bash install.sh' }
 
 " Initialize plugin system
