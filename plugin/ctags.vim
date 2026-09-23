@@ -1,11 +1,11 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" CTAGS settings for vim           
+" CTAGS settings for vim
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if $CTAGS_DB != ""
-let dbs = split($CTAGS_DB, ',')
-	for i in dbs
-		"echo i
-		let cmd = "set tags+=" . i
-		exec cmd
-	endfor
+" 把 $CTAGS_DB (逗号分隔) 里的每个库追加到 'tags'
+if !empty($CTAGS_DB)
+  for s:db in split($CTAGS_DB, ',')
+    if !empty(s:db)
+      execute 'set tags+=' . escape(s:db, ' \')
+    endif
+  endfor
 endif

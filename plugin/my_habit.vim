@@ -1,155 +1,74 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" My habit		 
+" My habit
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let b:thisdir=expand("%:p:h")
-let b:vim=b:thisdir."/.vim"
-if (filereadable(b:vim))
-	execute "source ".b:vim
+
+" 可选的项目级 .vim (以当前文件所在目录为基准)
+let s:project_vim = expand('%:p:h') . '/.vim'
+if filereadable(s:project_vim)
+  execute 'source' fnameescape(s:project_vim)
 endif
 
-"ignorecase
-"set ic
+" 各文件类型的缩进
+let s:indent = {
+      \ 'c':          'sw=8 ts=8 sts=8',
+      \ 'cpp':        'sw=8 ts=8 sts=8',
+      \ 'java':       'sw=4 ts=4 sts=4',
+      \ 'python':     'sw=4 ts=4 sts=4 et',
+      \ 'html':       'sw=4 ts=4 sts=4 et',
+      \ 'xhtml':      'sw=4 ts=4 sts=4 et',
+      \ 'css':        'sw=4 ts=4 sts=4 et',
+      \ 'htmldjango': 'sw=4 ts=4 sts=4 et',
+      \ 'javascript': 'sw=4 ts=4 sts=4 et',
+      \ }
+augroup my_habit
+  autocmd!
+  for s:ft in keys(s:indent)
+    execute 'autocmd FileType' s:ft 'setlocal' s:indent[s:ft]
+  endfor
+augroup END
 
-au FileType c setlocal sw=8 ts=8 sts=8
-au FileType cpp setlocal sw=8 ts=8 sts=8
-au FileType java setlocal sw=4 ts=4 sts=4
-au FileType python setlocal sw=4 ts=4 sts=4 et
-au FileType html setlocal sw=4 ts=4 sts=4 et
-au FileType xhtml setlocal sw=4 ts=4 sts=4 et
-au FileType css setlocal sw=4 ts=4 sts=4 et
-au FileType htmldjango setlocal sw=4 ts=4 sts=4 et
-au FileType javascript setlocal sw=4 ts=4 sts=4 et
-
-"autoindent
-set ai	
-
-"smart indent
-set si
-
-"cindentoption
-set cino+=g0
-
-"paste option
-"set paste
-
-"highlight search
-set hls
-
-"increase search
-set is
-
-"folder method
-"set fdm=indent
-
-"forbidden .swp files
-set noswf
-
-"The mouse can be enabled for different modes:
-"	n	Normal mode
-"	v	Visual mode
-"	i	Insert mode
-"	c	Command-line mode
-"	h	all previous modes when editing a help file
-"	a	all previous modes
-"	r	for |hit-enter| and |more-prompt| prompt
-set mouse=a
-
-"more endode
+" 全局选项
+set ai si cino+=g0 hls is noswf mouse=a
 set fencs=ucs-bom,utf-8,gb18030,gbk,gb2312,big5,euc-jp,euc-kr,latin1,cp936
 
-"map <F2> taglist toggle
-nmap <F2> :TlistToggle<CR>
+" 格式化: filetype -> 外部命令 (cmd) 或 vim 函数 (fn)
+let s:formatters = {
+      \ 'c':          {'cmd': 'astyle -A8Lfpjk3NSt'},
+      \ 'cpp':        {'cmd': 'astyle -A8Lfpjk3NSt'},
+      \ 'java':       {'cmd': 'astyle -A2Lfpjk3NSt'},
+      \ 'python':     {'cmd': 'autopep8 -'},
+      \ 'javascript': {'fn':  'JsBeautify'},
+      \ 'html':       {'fn':  'HtmlBeautify'},
+      \ 'xhtml':      {'fn':  'HtmlBeautify'},
+      \ 'css':        {'fn':  'CSSBeautify'},
+      \ 'json':       {'fn':  'JsonBeautify'},
+      \ }
 
-"map <F3> highlight search
-vmap <F3> y/<C-R>"<CR>
-
-"map <F4> Show Full Path
-nmap <F4> :call Path()<CR>
-
-"map <F4> grep words
-vmap <F4> y:vimgrep /<C-R>"/g %
-
-"map <F5> Update file
-nmap <F5> :call UpdateFile()<CR>
-
-"map <F6> echo file path
-nmap <F6> :call EchoFilePath()<CR>
-
-"map <F7> reformat file
-nmap <F7> :call ReFormatFile()<CR>
-
-"map <F8> reformat file
-vmap <F8> y:1,$s:\<<C-R>"\>:<C-R>"
-
-"map yank to system clip board
-vn y "+y
-vn p "+p
-
-"format code
-"nmap <S-F> <Esc>:call CodeFormat()<CR>
-nmap <silent> <leader>ff <Esc>:call CodeFormat()<CR>
-
-function! Path()
-	":echo substitute(expand("%:p:h"), ".*", "\\U\\0", "")
-	"echo expand("%:p")
-	:let @+ = expand("%:p")
+function! s:FormatCode() abort
+  let spec = get(s:formatters, &filetype, {})
+  if empty(spec)
+    echomsg '不支持' . &filetype . '文件类型-_-'
+    return
+  endif
+  let view = winsaveview()
+  if has_key(spec, 'cmd')
+    execute '%!' spec.cmd
+  else
+    call call(spec.fn, [])
+  endif
+  call winrestview(view)
 endfunction
 
-function! UpdateFile()
-	:e
-endfunction
+" 键映射
+nnoremap <silent> <F2> :TlistToggle<CR>
+vnoremap          <F3> y/<C-R>"<CR>
+nnoremap <silent> <F4> :let @+ = expand('%:p')<CR>
+vnoremap          <F4> y:vimgrep /<C-R>"/g %<CR>
+nnoremap <silent> <F5> :edit<CR>
+nnoremap <silent> <F6> :echo expand('%:p')<CR>
+vnoremap          <F8> y:1,$s:\<<C-R>"\>:<C-R>"<CR>
+nnoremap <silent> <leader>ff :call <SID>FormatCode()<CR>
 
-function! EchoFilePath()
-	:!echo "%:p"
-endfunction
-
-function! ReFormatFile()
-	"取得当前光标所在行号
-	let lineNum = line(".")
-	exec "%! astyle --style=gnu -A7fSs2"
-	"返回先前光标所在行
-	exec lineNum
-endfunction
-
-
-"调用AStyle程序，进行代码美化
-func CodeFormat()
-	"取得当前光标所在行号
-	let lineNum = line(".")
-	"C源程序
-	if &filetype == 'c'
-		"执行调用外部程序的命令
-		exec "%! astyle -A8Lfpjk3NSt"
-	"H头文件(文件类型识别为cpp)，CPP源程序
-	elseif &filetype == 'cpp'
-		"执行调用外部程序的命令
-		exec "%! astyle -A8Lfpjk3NSt"
-	"JAVA源程序
-	elseif &filetype == 'java'
-		"执行调用外部程序的命令
-		exec "%! astyle -A2Lfpjk3NSt"
-	"JS源程序
-	elseif &filetype == 'javascript'
-		"执行调用外部程序的命令
-		call JsBeautify()
-	elseif &filetype == 'html'
-		"执行调用外部程序的命令
-		call HtmlBeautify()
-	elseif &filetype == 'xhtml'
-		"执行调用外部程序的命令
-		call HtmlBeautify()
-	elseif &filetype == 'css'
-		"执行调用外部程序的命令
-		call CSSBeautify()
-	elseif &filetype == 'json'
-		"执行调用外部程序的命令
-		call JsonBeautify()
-	else
-		"提示信息
-		echo "不支持".&filetype."文件类型-_-"
-		"exec "%! astyle -A8Lfpjk3NST"
-	endif
-	"返回先前光标所在行
-	exec lineNum
-endfunc
-"映射代码美化函数到Shift+f快捷键
+" visual 下 yank/paste 走系统剪贴板
+vnoremap y "+y
+vnoremap p "+p

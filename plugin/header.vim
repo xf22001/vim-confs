@@ -1,5 +1,22 @@
-autocmd BufNewFile * exec ":call s:set_header()"
-autocmd BufWrite * exec "call s:set_last_modify_time(9)"
+" 由本脚本维护文件头的文件类型
+let s:managed_ft = ['make', 'c', 'cpp', 'python', 'sh', 'java']
+
+" 只刷新「修改日期：」那一行; 非管辖类型或找不到该行就不动
+function! s:refresh_modify_time() abort
+  if index(s:managed_ft, &filetype) < 0
+    return
+  endif
+  let lnum = search('修改日期：', 'nw')
+  if lnum > 0
+    call s:set_last_modify_time(lnum)
+  endif
+endfunction
+
+augroup vim_confs_header
+  autocmd!
+  autocmd BufNewFile * call s:set_header()
+  autocmd BufWrite   * call s:refresh_modify_time()
+augroup END
 
 " modify the last modified time of a file
 function s:set_last_modify_time(lineno)
