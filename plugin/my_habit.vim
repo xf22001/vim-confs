@@ -67,7 +67,9 @@ vnoremap          <F4> y:vimgrep /<C-R>"/g %<CR>
 nnoremap <silent> <F5> :edit<CR>
 nnoremap <silent> <F6> :echo expand('%:p')<CR>
 vnoremap          <F8> y:1,$s:\<<C-R>"\>:<C-R>"<CR>
-nnoremap <silent> <leader>ff :call <SID>FormatCode()<CR>
+" 故意不用 <leader>ff: coc 的 <leader>f (<Plug>(coc-format-selected)) 是它的
+" 严格前缀, timeoutlen(1s) 内没敲完第二个 f 就会走 coc, 表现为 "有时候不灵"。
+nnoremap <silent> <leader>F :call <SID>FormatCode()<CR>
 
 " visual 下 yank/paste 走系统剪贴板
 vnoremap y "+y
