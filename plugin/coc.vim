@@ -47,8 +47,8 @@ nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation
+" <C-]> 不在这里映射: 交给 plugin/ctags.vim 做「ctags 优先, 无 tag 时回退 coc」。
 nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> <C-]> <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
