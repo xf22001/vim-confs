@@ -8,7 +8,7 @@ Plug 'junegunn/vim-plug'
 Plug 'vim-scripts/OmniCppComplete'
 Plug 'vim-scripts/winmanager'
 Plug 'vim-scripts/taglist.vim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'commit': 'e159d0b2'}
 Plug 'maksimr/vim-jsbeautify'
 Plug 'vim-scripts/highlight.vim'
 
