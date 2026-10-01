@@ -23,11 +23,17 @@
 " Jason Duell       jduell@alumni.princeton.edu     2002/3/7
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" 每个库单独 try: 一个库加载失败不影响后面的库, 也不影响调用方后续的代码。
 function! s:add_cscope_db(cscope_dbs)
 	let dbs = split(a:cscope_dbs, ',')
 	for i in dbs
-		let cmd = "cs add " . i
-		exec cmd
+		try
+			exec "cs add " . i
+		catch
+			echohl WarningMsg
+			echomsg 'cscope: 加载失败, 已跳过 ' . i . ' —— ' . v:exception
+			echohl None
+		endtry
 	endfor
 endfunction
 
@@ -44,14 +50,24 @@ if has("cscope")
 	" if you want the reverse search order.
 	set csto=1
 
+	" 先开 verbose: 下面 add 成功时会打印加了哪个库 (失败是 error, 与它无关)
+	set cscopeverbose
+
 	" add any cscope database in current directory
-	if filereadable("cscope.out")
-		cs add cscope.out  
-	" else add the database pointed to by environment variable 
-	elseif $CSCOPE_DB != ""
-		"cs add $CSCOPE_DB
-		call s:add_cscope_db($CSCOPE_DB)
-	endif
+	" 必须包 try: cs add 失败会报错(路径含空格时是 E609), 而 Vim 在 if 块里出错
+	" 会直接跳到本块的 endif —— 后面那堆 nmap 和 cscopequickfix 就全丢了。
+	try
+		if filereadable("cscope.out")
+			cs add cscope.out
+		" else add the database pointed to by environment variable
+		elseif $CSCOPE_DB != ""
+			call s:add_cscope_db($CSCOPE_DB)
+		endif
+	catch
+		echohl WarningMsg
+		echomsg 'cscope: cscope.out 加载失败 —— ' . v:exception
+		echohl None
+	endtry
 
 	" show msg when any other cscope db added
 	set cscopeverbose  
