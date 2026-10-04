@@ -5,7 +5,7 @@ call plug#begin('~/.vim/plugged')
 " Make sure you use single quotes
 Plug 'junegunn/vim-plug'
 Plug 'vim-scripts/taglist.vim'
-Plug 'neoclide/coc.nvim', {'commit': 'e159d0b2'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'maksimr/vim-jsbeautify'
 Plug 'vim-scripts/highlight.vim'
 
